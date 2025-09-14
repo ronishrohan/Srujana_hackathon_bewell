@@ -32,7 +32,7 @@ const Assistant = () => {
     ]);
     setInput("");
     setGenerating(true);
-    generateReply(input.trim(), "user", category).then((reply) => {
+    generateReply(input.trim(), "user").then((reply) => {
       setMessages((prev) => [
         ...prev,
         { type: "bot", text: reply },
@@ -128,14 +128,7 @@ const Assistant = () => {
             disabled={generating}
             ref={inputRef}
           />
-          <Select.Root size="3" value={category} onValueChange={handleCategoryChange}>
-            <Select.Trigger />
-            <Select.Content >
-              <Select.Item value="Fitness">Fitness</Select.Item>
-              <Select.Item value="Sports">Sports</Select.Item>
-              <Select.Item value="Mental">Mental</Select.Item>
-            </Select.Content>
-          </Select.Root>
+          
           <Button size="3" className="h-full" onClick={sendMessage} disabled={generating}>
             <PaperPlaneIcon />
           </Button>
