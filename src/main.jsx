@@ -11,7 +11,7 @@ import { Theme } from "@radix-ui/themes";
 createRoot(document.getElementById('root')).render(
   <StrictMode>
     <HashRouter>
-      <Theme  accentColor='ruby'>
+      <Theme  accentColor='green'>
         <App />
       </Theme>
     </HashRouter>

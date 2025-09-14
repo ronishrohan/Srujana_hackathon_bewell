@@ -44,7 +44,7 @@ const Plans = () => {
                 <Button
                     variant="outline"
                     onClick={() => navigate("/create")}
-                    color="ruby"
+                    color="green"
                     className="!h-[20vh] !p-4 !text-xl !font-[Cal_Sans]"
                 >
                     <PlusCircledIcon width={20} height={20} />

@@ -12,6 +12,7 @@ import {
   where,
   getDocs,
 } from "firebase/firestore";
+import { PlusCircle } from "@phosphor-icons/react";
 
 const sh = [
   "Good job!",
@@ -160,12 +161,12 @@ const Home = () => {
             <h1 className="font-[Cal_Sans] text-3xl">
               Welcome back, {user.firstName}!
             </h1>
-            <h1 className="font-[Cal_Sans] text-xl">The machine assists but the effort is all yours</h1>
+            {/* <h1 className="font-[Cal_Sans] text-xl">The machine assists but the effort is all yours</h1> */}
           </div>
           <div>
             <div className="text-gray-400 font-bold">Your Progress</div>
             <div className="border-gray-200 border-2 rounded-md p-2 flex flex-col gap-1">
-              <div className="w-full flex gap-1 flex-wrap h-fit">
+              <div className="w-full flex gap-1  flex-wrap h-fit">
                 {(() => {
                   const arr = user.contributions || [];
                   const nonZero = arr.filter((w) => w > 0);
@@ -178,10 +179,10 @@ const Home = () => {
                   return arr.map((weight, i) => {
                     let color = "bg-gray-200";
                     if (weight === 0) color = "bg-gray-200";
-                    else if (weight < avg * 0.5) color = "bg-ruby-5";
-                    else if (weight < avg) color = "bg-ruby-7";
-                    else if (weight < avg * 1.5) color = "bg-ruby-10";
-                    else color = "bg-ruby-9";
+                    else if (weight < avg * 0.5) color = "bg-green-5";
+                    else if (weight < avg) color = "bg-green-7";
+                    else if (weight < avg * 1.5) color = "bg-green-10";
+                    else color = "bg-green-9";
                     // Calculate date string for this index (i)
                     // contributions[0] is Jan 1st, contributions[364] is Dec 31st
                     const year = new Date().getFullYear();
@@ -219,10 +220,10 @@ const Home = () => {
               <Button
                 variant="outline"
                 onClick={() => navigate("/create")}
-                color="ruby"
+                color="green"
                 className="!h-[20vh] !p-4 !text-xl !font-[Cal_Sans]"
               >
-                <PlusCircledIcon width={20} height={20} />
+                <PlusCircle weight="fill" width={20} height={20} />
                 Create plan
               </Button>
               {plansLoading ? (
@@ -248,10 +249,10 @@ const Home = () => {
               <Button
                 variant="outline"
                 onClick={() => navigate("/start")}
-                color="ruby"
+                color="green"
                 className="!h-[20vh] !p-4 !text-xl !font-[Cal_Sans]"
               >
-                <PlusCircledIcon width={20} height={20} />
+                <PlusCircle weight="fill" width={20} height={20} />
                 Create Session
               </Button>
               {sessionsLoading ? (

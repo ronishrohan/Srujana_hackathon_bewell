@@ -42,7 +42,7 @@ const ChecklistCheckbox = ({
   };
 
   return (
-    <label className="flex items-center gap-2 hover:bg-ruby-3 p-2 rounded-md !w-full select-none cursor-pointer">
+    <label className="flex items-center gap-2 hover:bg-green-3 p-2 rounded-md !w-full select-none cursor-pointer">
       <Checkbox checked={checked} onCheckedChange={handleChange} />
       <span className={checked ? "line-through" : ""}>{label}</span>
     </label>
@@ -148,9 +148,9 @@ const Plan = () => {
         </div>
         <div className="flex gap-2 items-center font-[Cal_Sans]">
           {progress}% 
-          <div className="!h-[2vh] w-full bg-ruby-3 rounded-sm">
+          <div className="!h-[2vh] w-full bg-green-3 rounded-sm">
             <div
-              className="bg-ruby-9 rounded-sm h-full transition-all duration-300 ease-in-out"
+              className="bg-green-9 rounded-sm h-full transition-all duration-300 ease-in-out"
               style={{ width: `${progress}%` }}
             ></div>
           </div>

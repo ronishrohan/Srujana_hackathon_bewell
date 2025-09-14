@@ -101,7 +101,7 @@ const CreatePlan = () => {
           loading={pending}
           variant="solid"
           size="3"
-          color="ruby"
+          color="green"
           className="!h !p-4"
           onClick={handleCreate}
         >

@@ -17,6 +17,7 @@ import { useNavigate } from "react-router-dom";
 import { onAuthStateChanged, signOut } from "firebase/auth";
 import { auth, db } from "../../firebase"; // Import db for database operations
 import { doc, getDoc } from "firebase/firestore"; // Import Firestore functions
+import { Calendar, Crown, HouseSimple, Play, PlusCircle, SignOut } from "@phosphor-icons/react";
 
 // SidebarButton component
 const SidebarButton = ({
@@ -28,9 +29,9 @@ const SidebarButton = ({
 }) => (
   <Button
     onClick={onClick}
-    variant={variant}
+    variant={"classic"}
     size={size}
-    className={`text-left !text-lg !h-fit !p-2 !w-full !justify-start !items-center ${className}`}
+    className={`text-left !text-lg !h-fit !p-2 !px-4 !gap-4 !w-full !justify-start !items-center ${className}`}
   >
     {children}
   </Button>
@@ -69,39 +70,38 @@ const Sidebar = () => {
   };
 
   return (
-    <div className="w-[15vw] shrink-0 h-dvh p-2 border-r flex flex-col gap-1 border-ruby-3">
-      <div className="font-[Cal_Sans] text-3xl mb-2 flex gap-2 items-center "><HeartFilledIcon width={20} height={20} /> Peekfit</div>
+    <div className="p-2 h-dvh">
+      <div className="w-[15vw] h-full shrink-0  p-2 border flex flex-col gap-1 rounded-xl border-green-5  ">
+      <div className="font-[Cal_Sans] text-3xl mb-2 flex gap-2 items-center "><HeartFilledIcon width={20} height={20} /> bewell</div>
 
       <SidebarButton onClick={() => navigate("/home")}>
-        <TargetIcon /> Home
+        <HouseSimple weight="fill" /> Home
       </SidebarButton>
       <SidebarButton onClick={() => navigate("/plans")}>
-        <CalendarIcon /> Plans
+        <Calendar weight="fill" /> Plans
       </SidebarButton>
       <SidebarButton onClick={() => navigate("/sessions")}>
-        <PlayIcon />Sessions
+        <Play weight="fill"/>Sessions
       </SidebarButton>
       <SidebarButton onClick={() => navigate("/leaderboard")}>
-        <RocketIcon /> Leaderboard
-      </SidebarButton>
-      <SidebarButton onClick={() => navigate("/nutri")}>
-        <CookieIcon/> Nutrition
+        <Crown weight="fill" />Leaderboard
       </SidebarButton>
 
 
       <div className="mt-auto gap-1 flex-col flex">
         <SidebarButton variant="outline" onClick={() => navigate("/create")}>
-          <PlusCircledIcon /> New plan
+          <PlusCircle weight="fill"/> New plan
         </SidebarButton>
         {isLoggedIn ? (
           <SidebarButton onClick={handleLogout}>
-            <ExitIcon /> Log Out
+            <SignOut weight="fill" /> Log Out
           </SidebarButton>
         ) : (
           <SidebarButton onClick={() => navigate("/login")}>
             <ExitIcon /> Log In
           </SidebarButton>
         )}
+        {isLoggedIn && <>
         <Button
           variant={"outline"}
           onClick={() => {
@@ -112,14 +112,15 @@ const Sidebar = () => {
           className="text-left !text-lg !h-fit !p-4 !w-full !justify-start !overflow-hidden relative !items-center"
         >
           <Avatar radius="full" fallback={user?.firstName.split("")[0] + "" + user?.lastName.split("")[0] } />
-          <div className="flex flex-col text-sm items-start">
-            <div>{user?.firstName + " " + user?.lastName || "Guest"}</div> {/* Display user's first name */}
-            <div className="text-xs overflow-ellipsis">
-              {user?.email || "No email available"} {/* Display user's email */}
-            </div>
-          </div>
-        </Button>
+                    <div className="flex flex-col text-sm items-start">
+                      <div>{user?.firstName + " " + user?.lastName || "Guest"}</div> {/* Display user's first name */}
+                      <div className="text-xs overflow-ellipsis">
+                        {user?.email || "No email available"} {/* Display user's email */}
+                      </div>
+                    </div>
+        </Button></>}
       </div>
+    </div>
     </div>
   );
 };

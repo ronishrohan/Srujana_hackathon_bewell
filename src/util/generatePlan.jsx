@@ -4,7 +4,6 @@
 
 import { GoogleGenAI, Type } from "@google/genai";
 
-// Accept an object with all plan fields
 export async function generatePlan({
   name,
   type,
@@ -13,35 +12,66 @@ export async function generatePlan({
   numChecks,
 }) {
   const ai = new GoogleGenAI({
-    apiKey: "AIzaSyCk4PLuWeycGTTmt2hEqwqUNvvpD2AMW5A",
+    apiKey: "AIzaSyBtrgxIgIcZYknXOMRZJbFeP-6gGkii-Xc",
   });
-  const config = {
 
+  const model =
+    "projects/311767670380/locations/europe-west4/endpoints/3076849149912547328";
+
+  const config = {
     responseMimeType: "application/json",
     responseSchema: {
       type: Type.OBJECT,
-      required: ["plan"],
+      required: ["planName", "planType", "difficulty", "numChecks", "checklist"],
       properties: {
-        plan: {
+        planName: { type: Type.STRING },
+        planType: { type: Type.STRING },
+        difficulty: { type: Type.STRING },
+        numChecks: { type: Type.NUMBER },
+        checklist: {
           type: Type.ARRAY,
-          items: {
-            type: Type.STRING,
-          },
+          items: { type: Type.STRING },
         },
       },
     },
+    maxOutputTokens: 65535,
+    temperature: 1,
+    topP: 0.95,
+    safetySettings: [
+      { category: "HARM_CATEGORY_HATE_SPEECH", threshold: "OFF" },
+      { category: "HARM_CATEGORY_DANGEROUS_CONTENT", threshold: "OFF" },
+      { category: "HARM_CATEGORY_SEXUALLY_EXPLICIT", threshold: "OFF" },
+      { category: "HARM_CATEGORY_HARASSMENT", threshold: "OFF" },
+    ],
   };
-  const model = "gemini-2.0-flash";
+
   const contents = [
+    {
+      role: "system",
+      parts: [
+        {
+          text: `You are an AI assistant that only talks about topics related to:
+- Healthcare (general health, illness prevention, how the body works, etc.)
+- Fitness (exercise, strength, cardio, stretching, etc.)
+- Wellbeing (mental health tips, stress, sleep, healthy habits, etc.)
+
+Rules:
+1. If someone asks about anything NOT related to health, fitness, or wellbeing (like tech, politics, coding, movies, etc.), do NOT answer. Instead, tell them you can only help with health-related questions.
+2. Do NOT give medical diagnoses or suggest specific treatments. Always recommend seeing a doctor or a licensed professional for serious health concerns.
+3. Be safe. Don’t suggest anything risky, dangerous, or unhealthy (like crash diets, unsafe supplements, or extreme workouts).
+4. Be respectful and helpful to everyone — including beginners, older adults, people with disabilities, or anyone else.
+5. If you don’t know something, it’s okay to say so. Never make up answers.
+
+Focus only on health, fitness, nutrition, and wellbeing. Be friendly and clear.`,
+        },
+      ],
+    },
     {
       role: "user",
       parts: [
         {
           text: `You are a professional health and fitness coach. Based on the plan name, type, the user's experience level, the plan description below, and the number of checks, generate a daily checklist in JSON format for the user to follow.
-
-The checklist should contain exactly ${numChecks} daily actions that are practical, actionable, and measurable. Avoid general statements; the plan should outline things the user can check off on a daily basis (e.g., "Drink 8 glasses of water," not "Stay hydrated").
-
-Input:
+The checklist must contain exactly ${numChecks} daily actions that are practical, actionable, and measurable.
 
 Plan Name: ${name}
 Plan Type: ${type}
@@ -49,41 +79,21 @@ Difficulty Level: ${difficulty}
 Prompt (Plan Description): ${prompt}
 Number of Checks: ${numChecks}
 
-The JSON output should have:
+JSON Output must include:
+- planName
+- planType
+- difficulty
+- numChecks
+- checklist (array of exactly ${numChecks} actionable items)
 
-planName: The name of the plan
+Checklist should cover:
+- Nutrition (e.g., "Eat a balanced breakfast with protein")
+- Physical activity (e.g., "Complete 30 minutes of cardio")
+- Hydration (e.g., "Drink 8 glasses of water")
+- Sleep habits (e.g., "Sleep at least 7 hours")
+- Mental wellness (only if applicable)
 
-planType: The type of the plan
-
-difficulty: The experience level
-
-numChecks: The number of checks (length of checklist array)
-
-checklist: An array of exactly ${numChecks} daily actionable items as strings
-
-Make the checklist:
-
-Practical: The actions should be things the user can do each day.
-
-Motivating: Include achievable, goal-oriented tasks that help keep the user on track.
-
-Tailored: Ensure each item is in line with the user's goal, type of plan, and difficulty level.
-
-Beginner/Intermediate/Advanced-appropriate: Adjust the difficulty of the checklist to suit the user's experience level.
-
-The items should cover areas like:
-
-Nutrition (e.g., "Eat a balanced breakfast with protein")
-
-Physical activity (e.g., "Complete 30 minutes of cardio")
-
-Hydration (e.g., "Drink 8 glasses of water")
-
-Sleep habits (e.g., "Sleep at least 7 hours")
-
-Mental wellness (only if applicable, e.g., "Practice 5 minutes of meditation")
-
-Ensure the checklist contains exactly ${numChecks} items.`,
+Ensure the output is a valid JSON object.`,
         },
       ],
     },
@@ -91,91 +101,24 @@ Ensure the checklist contains exactly ${numChecks} items.`,
       role: "model",
       parts: [
         {
-          text: `The user wants a daily checklist for a 'Thin Plan' designed for a beginner who is lactose intolerant, allergic to peanuts, and cannot walk.
-
-Plan Name: Thin Plan
-Difficulty: Beginner
-Constraints/Preferences:
-- Goal: Become thin (weight loss)
-- Dietary Restrictions: Lactose intolerant, peanut allergy
-- Physical Limitations: Cannot walk
-
-Checklist should cover:
-- Nutrition: Focus on weight loss, avoiding lactose and peanuts. Beginner-friendly.
-- Physical Activity: Adapt exercises for someone who cannot walk. Focus on upper body and core, seated exercises. Beginner level intensity.
-- Hydration: Standard hydration goals.
-- Sleep: General sleep hygiene advice.
-- Mental Wellness: Maybe a simple mindfulness/motivation item.
-
-Checklist Items Draft:
-1.  **Nutrition:**
-    *   Eat 3 main meals and 1-2 small snacks focusing on whole foods (fruits, vegetables, lean proteins, whole grains). *Needs refinement for lactose/peanut allergy.* -> Eat 3 main meals and 1-2 small snacks focusing on whole, unprocessed foods (fruits, vegetables, lean proteins like chicken/fish/beans, safe grains). Ensure all foods are lactose-free and peanut-free. Check labels carefully.
-    *   Track food intake using an app or journal. *Good for beginners.*
-    *   Choose lactose-free dairy alternatives (e.g., almond milk, soy milk, oat milk - check labels) or calcium-rich non-dairy sources (e.g., leafy greens, fortified orange juice).
-    *   Avoid all peanuts and products containing peanuts or peanut traces. Check food labels diligently.
-    *   Focus on portion control for meals and snacks. Use smaller plates if helpful.
-2.  **Physical Activity (Seated):**
-    *   Complete 15-20 minutes of seated exercises (e.g., arm circles, seated marching - lifting knees if possible, seated twists, shoulder presses with light weights or water bottles).
-    *   Try 10 minutes of seated resistance band exercises for upper body strength.
-    *   Do 5-10 minutes of gentle seated stretching.
-3.  **Hydration:**
-    *   Drink at least 8 glasses (64 oz or about 2 liters) of water throughout the day. Keep a water bottle nearby.
-4.  **Sleep:**
-    *   Aim for 7-9 hours of quality sleep per night. Try to go to bed and wake up around the same time.
-5.  **Mental Wellness:**
-    *   Take 5 minutes for mindful breathing or reflect on one positive thing about your day.
-
-Refining Checklist for JSON output:
-- Combine similar items where possible.
-- Make sure they are actionable daily tasks.
-- Keep language simple and encouraging.
-
-Final Checklist Items:
-1.  "Eat 3 portion-controlled meals focusing on whole foods like vegetables, fruits, and lean proteins. Ensure all meals are lactose-free and peanut-free."
-2.  "Have 1-2 small, healthy snacks if needed (e.g., fruit, lactose-free yogurt alternative, handful of safe nuts/seeds). Check labels for lactose and peanuts."
-3.  "Track your food and drink intake in a journal or app."
-4.  "Complete 20 minutes of seated exercises (e.g., arm raises, seated twists, shoulder presses with light weights/water bottles)."
-5.  "Perform 10 minutes of gentle seated stretching."
-6.  "Drink at least 8 glasses (64 oz / 2 liters) of water throughout the day."
-7.  "Aim for 7-9 hours of sleep. Establish a relaxing pre-sleep routine."
-8.  "Check food labels carefully for hidden lactose and peanuts before eating."
-9.  "Take 5 minutes for mindful breathing or reflect on your progress today."
-
-JSON Structure:
-{
-"planName": "Thin Plan",
-"difficulty": "Beginner",
-"checklist": [
-"Item 1",
-"Item 2",
-...
-]
-}
-
-Let's use the refined checklist items.`,
-        },
-        {
           text: `{
-  "plan": [
-    "Eat 3 portion-controlled meals focusing on whole foods like vegetables, fruits, and lean proteins. Ensure all meals are lactose-free and peanut-free.",
-    "Have 1-2 small, healthy snacks if needed (e.g., fruit, lactose-free yogurt alternative, handful of safe nuts/seeds). Check labels for lactose and peanuts.",
-    "Track your food and drink intake in a journal or app.",
-    "Complete 20 minutes of seated exercises (e.g., arm raises, seated twists, shoulder presses with light weights/water bottles).",
-    "Perform 10 minutes of gentle seated stretching.",
-    "Drink at least 8 glasses (64 oz / 2 liters) of water throughout the day.",
-    "Aim for 7-9 hours of sleep. Establish a relaxing pre-sleep routine.",
-    "Check food labels carefully for hidden lactose and peanuts before eating.",
-    "Take 5 minutes for mindful breathing or reflect on your progress today."
+  "planName": "Thin Plan",
+  "planType": "treatment",
+  "difficulty": "beginner",
+  "numChecks": 10,
+  "checklist": [
+    "Eat 3 portion-controlled meals focusing on vegetables, fruits, and lean proteins. Ensure meals are lactose-free and peanut-free.",
+    "Have 1-2 healthy snacks (e.g., fruit, lactose-free yogurt alternative). Check labels for allergens.",
+    "Track all meals and snacks in a journal or app.",
+    "Do 20 minutes of seated upper body exercises using water bottles or light weights.",
+    "Perform 10 minutes of gentle seated stretching or yoga.",
+    "Drink at least 8 glasses of water throughout the day.",
+    "Sleep 7-9 hours, going to bed at the same time daily.",
+    "Read all food labels carefully to avoid lactose and peanuts.",
+    "Take 5 minutes to practice mindful breathing or journaling.",
+    "Celebrate one small win from your day to stay motivated."
   ]
 }`,
-        },
-      ],
-    },
-    {
-      role: "user",
-      parts: [
-        {
-          text: `INSERT_INPUT_HERE`,
         },
       ],
     },
@@ -186,6 +129,18 @@ Let's use the refined checklist items.`,
     config,
     contents,
   });
-  console.log(JSON.parse(response.text));
+
   return JSON.parse(response.text);
 }
+
+// Example usage:
+// (async () => {
+//   const plan = await generatePlan({
+//     name: "Weight Loss Boost",
+//     type: "treatment",
+//     prompt: "Help me lose weight with home-friendly tips.",
+//     difficulty: "easy",
+//     numChecks: 10,
+//   });
+//   console.log(plan);
+// })();

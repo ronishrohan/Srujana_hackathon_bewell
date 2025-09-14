@@ -68,10 +68,10 @@ const Assistant = () => {
   };
 
   return (
-    <div style={{width: open ? "900px" : "300px"}} className="transition-all duration-300 ease-in-out fixed bottom-0 flex-col bg-white/60 border-ruby-4 border backdrop-blur-2xl right-4 rounded-t-sm z-[100]  shadow-xl shadow-ruby-5">
+    <div style={{width: open ? "900px" : "300px"}} className="transition-all duration-300 ease-in-out fixed bottom-0 flex-col bg-white/60 border-green-4 border backdrop-blur-2xl right-4 rounded-t-sm z-[100]  shadow-xl shadow-green-5">
       <button
         onClick={() => setOpen((prev) => !prev)}
-        className="justify-between bg-gradient-to-t from-ruby-9 to-ruby-10 text-white flex w-full items-center px-4 text-left cursor-pointer border-ruby-7 p-2 rounded-t-sm h-[50px] font-[Cal_Sans]"
+        className="justify-between bg-gradient-to-t from-green-9 to-green-10 text-white flex w-full items-center px-4 text-left cursor-pointer border-green-7 p-2 rounded-t-sm h-[50px] font-[Cal_Sans]"
       >
         <div className="flex gap-2 items-center leading-3">
           <Sparkle weight="fill" /> Assistant
@@ -98,7 +98,7 @@ const Assistant = () => {
               >
                 <div
                   className={`w-fit px-4 py-2 rounded-sm ${msg.type === "user"
-                    ? "bg-ruby-9 text-white"
+                    ? "bg-green-9 text-white"
                     : "bg-gray-100"
                     }`}
                   style={{ maxWidth: "70%" }}

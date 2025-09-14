@@ -13,7 +13,7 @@ import Profile from "./pages/profile/Profile";
 import StartSession from "./pages/session/StartSession";
 import InSession from "./pages/session/InSession";
 
-import Nutri from "./pages/nutri/Nutri";
+// import Nutri from "./pages/nutri/Nutri";
 const App = () => {
   return (
     <div className="flex h-dvh font-geist">
@@ -31,7 +31,7 @@ const App = () => {
           <Route path="/plans" element={<Plans />} />
           <Route path="/leaderboard" element={<Leaderboard />} />
           <Route path="/profile/:userId" element={<Profile />} />
-          <Route path="/nutri" element={<Nutri />} />
+          {/* <Route path="/nutri" element={<Nutri />} /> */}
         </Routes>
       </div>
     </div>
