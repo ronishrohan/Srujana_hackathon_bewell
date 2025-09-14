@@ -79,6 +79,7 @@ const Plan = () => {
           ? planData.checklist.map(() => false)
           : []
       );
+      console.log(planData)
       setUserId(planData.createdBy || null);
       setLoading(false);
     };

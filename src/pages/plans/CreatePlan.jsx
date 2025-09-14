@@ -5,6 +5,7 @@ import { Select } from "@radix-ui/themes";
 import { useNavigate } from "react-router-dom";
 import { auth, db } from "../../firebase";
 import { collection, addDoc } from "firebase/firestore";
+import axios from "axios";
 const CreatePlan = () => {
   // State for all inputs
   const [planName, setPlanName] = useState("");
@@ -16,16 +17,24 @@ const CreatePlan = () => {
   const navigate = useNavigate()
   const handleCreate = async () => {
     startTransition(async () => {
-      const data = await generatePlan({
+      const res = await axios.post("http://localhost:3000/generate-plan", {
         name: planName,
         type: planType,
         prompt: planPrompt,
         difficulty,
         numChecks: Number(numChecks),
-      });
+      })
+      const data = res.data;
+      // const data = await generatePlan({
+      //   name: planName,
+      //   type: planType,
+      //   prompt: planPrompt,
+      //   difficulty,
+      //   numChecks: Number(numChecks),
+      // });
 
       // Get the checklist array from the returned data
-      const checklist = data.plan || [];
+      const checklist = data.checklist || [];
 
       // Get the current user id
       const user = auth.currentUser;

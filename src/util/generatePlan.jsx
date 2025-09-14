@@ -12,12 +12,16 @@ export async function generatePlan({
   numChecks,
 }) {
   const ai = new GoogleGenAI({
-    apiKey: "AIzaSyBtrgxIgIcZYknXOMRZJbFeP-6gGkii-Xc",
+    apiKey: "AIzaSyCk4PLuWeycGTTmt2hEqwqUNvvpD2AMW5A",
+    // vertexai: true,
+    // location: "europe-west4"
   });
 
-  const model =
-    "projects/311767670380/locations/europe-west4/endpoints/3076849149912547328";
+  // const model = "gemini-2.0-flash";
+  const  model = "projects/311767670380/locations/europe-west4/endpoints/3076849149912547328"
 
+
+  // ✅ Moved the system prompt to system_instruction
   const config = {
     responseMimeType: "application/json",
     responseSchema: {
@@ -37,17 +41,7 @@ export async function generatePlan({
     maxOutputTokens: 65535,
     temperature: 1,
     topP: 0.95,
-    safetySettings: [
-      { category: "HARM_CATEGORY_HATE_SPEECH", threshold: "OFF" },
-      { category: "HARM_CATEGORY_DANGEROUS_CONTENT", threshold: "OFF" },
-      { category: "HARM_CATEGORY_SEXUALLY_EXPLICIT", threshold: "OFF" },
-      { category: "HARM_CATEGORY_HARASSMENT", threshold: "OFF" },
-    ],
-  };
-
-  const contents = [
-    {
-      role: "system",
+    systemInstruction: {
       parts: [
         {
           text: `You are an AI assistant that only talks about topics related to:
@@ -66,6 +60,16 @@ Focus only on health, fitness, nutrition, and wellbeing. Be friendly and clear.`
         },
       ],
     },
+    safetySettings: [
+      { category: "HARM_CATEGORY_HATE_SPEECH", threshold: "OFF" },
+      { category: "HARM_CATEGORY_DANGEROUS_CONTENT", threshold: "OFF" },
+      { category: "HARM_CATEGORY_SEXUALLY_EXPLICIT", threshold: "OFF" },
+      { category: "HARM_CATEGORY_HARASSMENT", threshold: "OFF" },
+    ],
+  };
+
+  // ✅ Removed system role from contents, leaving only user + model
+  const contents = [
     {
       role: "user",
       parts: [
@@ -97,38 +101,14 @@ Ensure the output is a valid JSON object.`,
         },
       ],
     },
-    {
-      role: "model",
-      parts: [
-        {
-          text: `{
-  "planName": "Thin Plan",
-  "planType": "treatment",
-  "difficulty": "beginner",
-  "numChecks": 10,
-  "checklist": [
-    "Eat 3 portion-controlled meals focusing on vegetables, fruits, and lean proteins. Ensure meals are lactose-free and peanut-free.",
-    "Have 1-2 healthy snacks (e.g., fruit, lactose-free yogurt alternative). Check labels for allergens.",
-    "Track all meals and snacks in a journal or app.",
-    "Do 20 minutes of seated upper body exercises using water bottles or light weights.",
-    "Perform 10 minutes of gentle seated stretching or yoga.",
-    "Drink at least 8 glasses of water throughout the day.",
-    "Sleep 7-9 hours, going to bed at the same time daily.",
-    "Read all food labels carefully to avoid lactose and peanuts.",
-    "Take 5 minutes to practice mindful breathing or journaling.",
-    "Celebrate one small win from your day to stay motivated."
-  ]
-}`,
-        },
-      ],
-    },
   ];
 
   const response = await ai.models.generateContent({
-    model,
+    model:"gemini-2.0-flash",
     config,
     contents,
   });
+  console.log(JSON.parse(response.text))
 
   return JSON.parse(response.text);
 }
