@@ -23,24 +23,32 @@ const CreatePlan = () => {
         prompt: planPrompt,
         difficulty,
         numChecks: Number(numChecks),
-      })
+      });
       const data = res.data;
-      // const data = await generatePlan({
-      //   name: planName,
-      //   type: planType,
-      //   prompt: planPrompt,
-      //   difficulty,
-      //   numChecks: Number(numChecks),
-      // });
-
-      // Get the checklist array from the returned data
       const checklist = data.checklist || [];
 
-      // Get the current user id
-      const user = auth.currentUser;
-      const userId = user ? user.uid : null;
+      // Find user by email
+      let targetUserId = null;
+      if (email) {
+        // Query Firestore for user with this email
+        // Assumes 'users' collection has 'email' field
+        const { query, where, getDocs } = await import("firebase/firestore");
+        const q = query(collection(db, "users"), where("email", "==", email));
+        const querySnapshot = await getDocs(q);
+        if (!querySnapshot.empty) {
+          targetUserId = querySnapshot.docs[0].id;
+        }
+      }
 
-      // Create an array of booleans for checklist completion
+      // Fallback to current user if not found
+      if (!targetUserId) {
+        const user = auth.currentUser;
+        targetUserId = user ? user.uid : null;
+      }
+
+      // Viewer is always current user
+      const viewerId = auth.currentUser ? auth.currentUser.uid : null;
+
       const checklistDone = checklist.map(() => false);
 
       // Store the plan in Firestore
@@ -52,7 +60,8 @@ const CreatePlan = () => {
         numChecks: Number(numChecks),
         checklist,
         checklistDone,
-        createdBy: userId,
+        createdBy: targetUserId,
+        viewer: viewerId,
         createdAt: new Date(),
       });
 
@@ -60,10 +69,19 @@ const CreatePlan = () => {
     });
   };
 
+  const [email, setEmail] = useState("")
+
   return (
     <div className="p-2 flex flex-col gap-2 size-full items-center justify-center">
       <div className="w-[40vw] flex flex-col gap-2">
         <div className="text-2xl font-[Cal_Sans]">Create a new plan</div>
+        <TextField.Root
+          size="3"
+          placeholder="For (email)"
+          value={email}
+          type={email}
+          onChange={(e) => setEmail(e.target.value)}
+        />
         <TextField.Root
           size="3"
           placeholder="Plan Name"
@@ -108,7 +126,7 @@ const CreatePlan = () => {
         </Select.Root>
         <Button
           loading={pending}
-          variant="solid"
+          variant="classic"
           size="3"
           color="green"
           className="!h !p-4"

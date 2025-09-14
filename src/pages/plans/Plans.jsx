@@ -1,4 +1,4 @@
-import { PlusCircledIcon } from "@radix-ui/react-icons";
+import { EyeOpenIcon, PlusCircledIcon } from "@radix-ui/react-icons";
 import { Button, Skeleton } from "@radix-ui/themes";
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -16,17 +16,30 @@ const Plans = () => {
             if (!currentUser) {
                 navigate("/login");
             } else {
-                // Fetch plans for current user
+                // Fetch plans where current user is the viewer or createdBy
                 const fetchPlans = async () => {
                     setPlansLoading(true);
-                    const plansQuery = query(
+                    const plansArr = [];
+                    // Fetch viewer plans
+                    const viewerQuery = query(
+                        collection(db, "plans"),
+                        where("viewer", "==", currentUser.uid)
+                    );
+                    const viewerSnapshot = await getDocs(viewerQuery);
+                    viewerSnapshot.forEach((doc) => {
+                        plansArr.push({ id: doc.id, ...doc.data(), _isViewer: true });
+                    });
+                    // Fetch createdBy plans
+                    const createdByQuery = query(
                         collection(db, "plans"),
                         where("createdBy", "==", currentUser.uid)
                     );
-                    const querySnapshot = await getDocs(plansQuery);
-                    const plansArr = [];
-                    querySnapshot.forEach((doc) => {
-                        plansArr.push({ id: doc.id, ...doc.data() });
+                    const createdBySnapshot = await getDocs(createdByQuery);
+                    createdBySnapshot.forEach((doc) => {
+                        // Avoid duplicates if already in viewer plans
+                        if (!plansArr.some((p) => p.id === doc.id)) {
+                            plansArr.push({ id: doc.id, ...doc.data(), _isViewer: false });
+                        }
                     });
                     setPlans(plansArr);
                     setPlansLoading(false);
@@ -90,15 +103,22 @@ const PlanCard = ({ plan }) => {
         >
             <div className="text-xl font-[Cal_Sans]">{plan.name}</div>
             <div className="text-base">{plan.type}</div>
+           
             <div
                 className={`w-full h-[5vh] mt-auto rounded-sm relative flex items-center justify-start ${progressBg}`}
             >
+                
                 <div
                     className={`h-full rounded-sm ${progressBar}`}
                     style={{ width: `${percent}%` }}
                 ></div>
             </div>
+             <div className="flex w-full justify-end">
+                {plan._isViewer && (
+                <div className="text-xs flex gap-2 items-center"><EyeOpenIcon /> VIEWER</div>
+            )}
             <div className="w-full text-right font-[Cal_Sans]">{percent}%</div>
+             </div>
         </Button>
     );
 };

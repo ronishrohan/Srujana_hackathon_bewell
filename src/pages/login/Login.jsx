@@ -103,9 +103,9 @@ const Login = () => {
             : "Don't have an account? Sign Up"}
         </div>
         <Button
-          variant="solid"
+          variant="classic"
           size="3"
-          color="ruby"
+          color="green"
           className="!h !p-4"
           onClick={handleAuth}
           loading={loading}
