@@ -1,4 +1,3 @@
-
 # BeWell - AI Healthcare
 
 **BeWell** is a web-based AI-powered healthcare platform that enables doctors to create and assign personalized health plans to their patients. It tracks patient adherence to those plans, gamifies the experience through a points system, and offers interactive, time-based sessions powered by AI-generated slides to guide patients step by step.
@@ -80,8 +79,45 @@ nodemon server.js
 ```
 Srujana_hackathon_bewell/
 ├── resources/         # Resources used to train the model
-├── frontend/         # React + Vite frontend code
-├── backend/          # Node.js + Express API server
-└── README.md         # Project documentation
+├── frontend/          # React + Vite frontend code
+├── backend/           # Node.js + Express API server
+└── README.md          # Project documentation
 ```
 
+---
+
+## API Blueprint
+
+### `POST /generate-plan`
+
+Generates a **daily health checklist** based on plan details.
+
+**Basic Flow (generatePlan function):**
+
+```js
+async function generatePlan({ name, type, prompt, difficulty, numChecks }) {
+  // 1. Initialize Google GenAI client with project and model info
+  // 2. Define response schema (planName, planType, difficulty, numChecks, checklist[])
+  // 3. Provide system instructions for safe & health-focused plan generation
+  // 4. Pass plan details as user input (name, type, description, difficulty, numChecks)
+  // 5. Call ai.models.generateContent() with model, config, and contents
+  // 6. Parse the JSON response and return the generated checklist
+}
+```
+
+### `POST /generate-reply`
+
+Generates a **health-related reply** to user messages, acting like an AI assistant.
+
+**Basic Flow (generateReply function):**
+
+```js
+async function generateReply(message) {
+  // 1. Initialize Google GenAI client with project and model info
+  // 2. Set system instructions to only respond to health-related questions
+  // 3. If question is unrelated to health, instruct AI to refuse politely
+  // 4. Pass user message as input
+  // 5. Call ai.models.generateContent() with model, config, and contents
+  // 6. Return the generated reply text
+}
+```
